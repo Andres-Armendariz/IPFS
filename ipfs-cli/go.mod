@@ -1,4 +1,4 @@
-module IPFS
+module ipfs-cli
 
 go 1.22.3
 

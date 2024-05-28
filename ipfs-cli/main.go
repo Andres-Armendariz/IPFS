@@ -1,58 +1,45 @@
 package main
 
 import (
-    "os"
-    "github.com/spf13/cobra"
-    "fmt"
-    "github.com/ipfs/go-ipfs-api"
+	"fmt"
+	"os"
+	"ipfs-cli/cmd"
+	"github.com/spf13/cobra"
 )
 
-
 var rootCmd = &cobra.Command{
-    Use:   "ipfs-cli",
-    Short: "CLI para IPFS",
-}
-
-var path = "/home/edvard/Pictures/1330715.png"
-
-func Upload(filename string) {
-    sh := shell.NewShell("localhost:5001")
-    file, err := os.Open(filename)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error al abrir el archivo: %s\n", err)
-        return
-    }
-    defer file.Close()
-
-    // Add the file to IPFS
-    hash, err := sh.Add(file)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error al subir el archivo: %s\n", err)
-        return
-    }
-    fmt.Printf("Archivo subido con CID: %s\n", hash)
+	Use:   "ipfs-cli",
+	Short: "CLI para IPFS",
 }
 
 var uploadCmd = &cobra.Command{
-    Use:   "upload [file]",
-    Short: "Sube un archivo a IPFS",
-    Args:  cobra.ExactArgs(1),
-    Run: func(cmd *cobra.Command, args []string) {
-        filename := args[0]
-        Upload(filename)
-    },
+	Use:   "upload [file] [mfs-path]",
+	Short: "Sube un archivo a IPFS y lo agrega a MFS",
+	Args:  cobra.ExactArgs(2),
+	Run: func(command *cobra.Command, args []string) {
+		filePath := args[0]
+		mfsPath := args[1]
+		err := cmd.UploadFile(filePath, mfsPath)
+		if err != nil {
+			fmt.Printf("Error al subir el archivo: %v\n", err)
+			os.Exit(1)
+		}
+	},
 }
 
 func init() {
-    rootCmd.AddCommand(uploadCmd)
-    // Agrega más comandos
+	rootCmd.AddCommand(uploadCmd)
+	// Agrega más comandos aquí si es necesario
 }
 
 func main() {
-    if err := rootCmd.Execute(); err != nil {
-        os.Exit(1)
-    }
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
+
+
 
 // pasar la direccion de donde esta el archivo como variable
 // llamar al metodo sin argumento 
