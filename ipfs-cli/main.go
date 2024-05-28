@@ -3,47 +3,52 @@ package main
 import (
 	"fmt"
 	"os"
+
 	"ipfs-cli/cmd"
-	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "ipfs-cli",
-	Short: "CLI para IPFS",
-}
+func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: my-ipfs-app <command> [<args>]")
+		fmt.Println("Commands:")
+		fmt.Println("  upload <file-path> <mfs-path>  Upload a file to IPFS and add it to MFS")
+		fmt.Println("  download <cid> <output-path>   Download a file from IPFS using its CID")
+		os.Exit(1)
+	}
 
-var uploadCmd = &cobra.Command{
-	Use:   "upload [file] [mfs-path]",
-	Short: "Sube un archivo a IPFS y lo agrega a MFS",
-	Args:  cobra.ExactArgs(2),
-	Run: func(command *cobra.Command, args []string) {
-		filePath := args[0]
-		mfsPath := args[1]
-		err := cmd.UploadFile(filePath, mfsPath)
-		if err != nil {
-			fmt.Printf("Error al subir el archivo: %v\n", err)
+	command := os.Args[1]
+
+	switch command {
+	case "upload":
+		if len(os.Args) != 4 {
+			fmt.Println("Usage: IPFS upload <file-path> <mfs-path>")
 			os.Exit(1)
 		}
-	},
-}
+		filePath := os.Args[2]
+		mfsPath := os.Args[3]
+		err := cmd.UploadFile(filePath, mfsPath)
+		if err != nil {
+			fmt.Printf("Error uploading file: %v\n", err)
+			os.Exit(1)
+		}
 
-func init() {
-	rootCmd.AddCommand(uploadCmd)
-	// Agrega más comandos aquí si es necesario
-}
+	case "download":
+		if len(os.Args) != 3 {
+			fmt.Println("Usage: IPFS download <cid>")
+			os.Exit(1)
+		}
+		cid := os.Args[2]
+		err := cmd.DownloadFile(cid)
+		if err != nil {
+			fmt.Printf("Error downloading file: %v\n", err)
+			os.Exit(1)
+		}
 
-func main() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+	default:
+		fmt.Println("Unknown command:", command)
+		fmt.Println("Commands:")
+		fmt.Println("  upload <file-path> <mfs-path>  Upload a file to IPFS and add it to MFS")
+		fmt.Println("  download <cid>  Download a file from IPFS using its CID")
 		os.Exit(1)
 	}
 }
-
-
-
-// pasar la direccion de donde esta el archivo como variable
-// llamar al metodo sin argumento 
-// crear metodo para descargar archivo
-// crear metodo para listar 
-// al momennto de crear el archivo, debe recibir un parametro (que puede ser otra funcion) para crear un directorio de como debe irse guardando
-// crear metodo para instanciar el daemon
