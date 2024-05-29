@@ -13,6 +13,7 @@ func main() {
 		fmt.Println("Commands:")
 		fmt.Println("  upload <file-path> <mfs-path>  Upload a file to IPFS and add it to MFS")
 		fmt.Println("  download <cid> <output-path>   Download a file from IPFS using its CID")
+        fmt.Println("  list <cid> List CIDs from a path")
 		os.Exit(1)
 	}
 
@@ -56,7 +57,7 @@ func main() {
             os.Exit(1)
         }
         if len(cids) == 0 {
-            fmt.Println("No CIDs found in ", mfsPath)
+            fmt.Println("No CIDs found in  ", mfsPath)
             return
         }
 
