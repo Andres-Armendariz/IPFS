@@ -44,11 +44,28 @@ func main() {
 			os.Exit(1)
 		}
 
+    case "list":
+        if len(os.Args) < 2 {
+            fmt.Println("Usage: IPFS list-CID <mfs-path>")
+            os.Exit(1)
+        }
+        mfsPath := os.Args[2]
+        cids, err := cmd.ListCID(mfsPath)
+        if err != nil {
+            fmt.Printf("Error listing CIDs: %v\n", err)
+            os.Exit(1)
+        }
+        if len(cids) == 0 {
+            fmt.Println("No CIDs found in ", mfsPath)
+            return
+        }
+
 	default:
 		fmt.Println("Unknown command:", command)
 		fmt.Println("Commands:")
 		fmt.Println("  upload <file-path> <mfs-path>  Upload a file to IPFS and add it to MFS")
 		fmt.Println("  download <cid>  Download a file from IPFS using its CID")
+        fmt.Println("  list <cid> List CIDs from a path")
 		os.Exit(1)
 	}
 }
