@@ -1,62 +1,72 @@
 package main
 
 import (
-    "os"
-    "github.com/spf13/cobra"
-    "fmt"
-    "github.com/ipfs/go-ipfs-api"
+	"fmt"
+	"os"
+
+	"ipfs-cli/cmd"
 )
 
-
-var rootCmd = &cobra.Command{
-    Use:   "ipfs-cli",
-    Short: "CLI para IPFS",
-}
-
-var path = "/home/edvard/Pictures/1330715.png"
-
-func Upload(filename string) {
-    sh := shell.NewShell("localhost:5001")
-    file, err := os.Open(filename)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error al abrir el archivo: %s\n", err)
-        return
-    }
-    defer file.Close()
-
-    // Add the file to IPFS
-    hash, err := sh.Add(file)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error al subir el archivo: %s\n", err)
-        return
-    }
-    fmt.Printf("Archivo subido con CID: %s\n", hash)
-}
-
-var uploadCmd = &cobra.Command{
-    Use:   "upload [file]",
-    Short: "Sube un archivo a IPFS",
-    Args:  cobra.ExactArgs(1),
-    Run: func(cmd *cobra.Command, args []string) {
-        filename := args[0]
-        Upload(filename)
-    },
-}
-
-func init() {
-    rootCmd.AddCommand(uploadCmd)
-    // Agrega más comandos
-}
-
 func main() {
-    if err := rootCmd.Execute(); err != nil {
-        os.Exit(1)
-    }
-}
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: my-ipfs-app <command> [<args>]")
+		fmt.Println("Commands:")
+		fmt.Println("  upload <file-path> <mfs-path>  Upload a file to IPFS and add it to MFS")
+		fmt.Println("  download <cid> <output-path>   Download a file from IPFS using its CID")
+        fmt.Println("  list <cid> List CIDs from a path")
+		os.Exit(1)
+	}
 
-// pasar la direccion de donde esta el archivo como variable
-// llamar al metodo sin argumento 
-// crear metodo para descargar archivo
-// crear metodo para listar 
-// al momennto de crear el archivo, debe recibir un parametro (que puede ser otra funcion) para crear un directorio de como debe irse guardando
-// crear metodo para instanciar el daemon
+	command := os.Args[1]
+
+	switch command {
+	case "upload":
+		if len(os.Args) != 4 {
+			fmt.Println("Usage: IPFS upload <file-path> <mfs-path>")
+			os.Exit(1)
+		}
+		filePath := os.Args[2]
+		mfsPath := os.Args[3]
+		err := cmd.UploadFile(filePath, mfsPath)
+		if err != nil {
+			fmt.Printf("Error uploading file: %v\n", err)
+			os.Exit(1)
+		}
+
+	case "download":
+		if len(os.Args) != 3 {
+			fmt.Println("Usage: IPFS download <cid>")
+			os.Exit(1)
+		}
+		cid := os.Args[2]
+		err := cmd.DownloadFile(cid)
+		if err != nil {
+			fmt.Printf("Error downloading file: %v\n", err)
+			os.Exit(1)
+		}
+
+    case "list":
+        if len(os.Args) < 2 {
+            fmt.Println("Usage: IPFS list-CID <mfs-path>")
+            os.Exit(1)
+        }
+        mfsPath := os.Args[2]
+        cids, err := cmd.ListCID(mfsPath)
+        if err != nil {
+            fmt.Printf("Error listing CIDs: %v\n", err)
+            os.Exit(1)
+        }
+        if len(cids) == 0 {
+            fmt.Println("No CIDs found in  ", mfsPath)
+            return
+        }
+
+	default:
+		fmt.Println("Unknown command:", command)
+		fmt.Println("Commands:")
+		fmt.Println("  upload <file-path> <mfs-path>  Upload a file to IPFS and add it to MFS")
+		fmt.Println("  download <cid>  Download a file from IPFS using its CID")
+        fmt.Println("  list <cid> List CIDs from a path")
+		os.Exit(1)
+	}
+}
