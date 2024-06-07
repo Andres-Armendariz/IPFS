@@ -8,7 +8,7 @@ import (
 	shell "github.com/ipfs/go-ipfs-api"
 )
 
-var outputPath = "/home/edvard/Documents/"
+var outputPath = "/home/aaioet/" //cambiar con la ruta donde se desea descargar
 
 // DownloadFileFromCID downloads a file from IPFS using its CID and saves it locally
 func DownloadFile(cid string) error {
