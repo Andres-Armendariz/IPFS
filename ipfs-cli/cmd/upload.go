@@ -10,8 +10,12 @@ import (
 	shell "github.com/ipfs/go-ipfs-api"
 )
 
-// UploadFileToMFS uploads a file to IPFS and adds it to MFS
+// UploadFile uploads a file to IPFS and adds it to MFS
 func UploadFile(filePath string, mfsPath string) error {
+	
+	// Convert file paths to a format compatible with the OS
+	filePath = filepath.ToSlash(filePath)
+
 	// Connect to the local IPFS node
 	sh := shell.NewShell("localhost:5001")
 
@@ -39,8 +43,9 @@ func UploadFile(filePath string, mfsPath string) error {
 
 	// Append the file name to the MFS path if it is a directory
 	destPath := mfsPath
+	
 	if isDir(ctx, sh, mfsPath) {
-		destPath = filepath.Join(mfsPath, filepath.Base(filePath))
+		destPath = filepath.ToSlash(filepath.Join(mfsPath, filepath.Base(filePath)))
 	}
 
 	// Add the file to MFS

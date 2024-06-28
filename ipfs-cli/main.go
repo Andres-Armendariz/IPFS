@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-
 	"ipfs-cli/cmd"
 )
 
@@ -13,7 +12,7 @@ func main() {
 		fmt.Println("Commands:")
 		fmt.Println("  upload <file-path> <mfs-path>  Upload a file to IPFS and add it to MFS")
 		fmt.Println("  download <cid> <output-path>   Download a file from IPFS using its CID")
-        fmt.Println("  list <cid> List CIDs from a path")
+        fmt.Println("  list <path> List CIDs from a path")
 		os.Exit(1)
 	}
 
@@ -27,6 +26,7 @@ func main() {
 		}
 		filePath := os.Args[2]
 		mfsPath := os.Args[3]
+
 		err := cmd.UploadFile(filePath, mfsPath)
 		if err != nil {
 			fmt.Printf("Error uploading file: %v\n", err)
@@ -51,6 +51,7 @@ func main() {
             os.Exit(1)
         }
         mfsPath := os.Args[2]
+
         cids, err := cmd.ListCID(mfsPath)
         if err != nil {
             fmt.Printf("Error listing CIDs: %v\n", err)
@@ -66,7 +67,7 @@ func main() {
 		fmt.Println("Commands:")
 		fmt.Println("  upload <file-path> <mfs-path>  Upload a file to IPFS and add it to MFS")
 		fmt.Println("  download <cid>  Download a file from IPFS using its CID")
-        fmt.Println("  list <cid> List CIDs from a path")
+        fmt.Println("  list <path> List CIDs from a path")
 		os.Exit(1)
 	}
 }
