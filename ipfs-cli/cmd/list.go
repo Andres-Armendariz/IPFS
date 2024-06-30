@@ -3,13 +3,17 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"strings"
-
+	"path/filepath"
+	
 	shell "github.com/ipfs/go-ipfs-api"
 )
 
 // ListCID lists all CIDs within a given MFS path
 func ListCID(mfsPath string) ([]string, error) {
+
+	// Convert file paths from (/) to (\)
+	mfsPath = filepath.ToSlash(mfsPath)
+
 	// Connect to the local IPFS node
 	sh := shell.NewShell("localhost:5001")
 
@@ -21,11 +25,6 @@ func ListCID(mfsPath string) ([]string, error) {
 	// Create a context
 	ctx := context.Background()
 
-	// Ensure the path starts with a leading slash
-	if !strings.HasPrefix(mfsPath, "/") {
-		mfsPath = "/" + mfsPath
-	}
-
 	// List the directory in MFS
 	entries, err := sh.FilesLs(ctx, mfsPath)
 	if err != nil {
@@ -35,7 +34,8 @@ func ListCID(mfsPath string) ([]string, error) {
 	// Extract CIDs from the directory entries
 	var cids []string
 	for _, entry := range entries {
-		stat, err := sh.FilesStat(ctx, mfsPath+"/"+entry.Name)
+		entryPath := filepath.ToSlash(filepath.Join(mfsPath, entry.Name))
+		stat, err := sh.FilesStat(ctx, entryPath)
 		if err != nil {
 			return nil, fmt.Errorf("could not stat file %s: %v", entry.Name, err)
 		}

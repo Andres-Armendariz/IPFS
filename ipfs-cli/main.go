@@ -54,7 +54,7 @@ func main() {
 
         cids, err := cmd.ListCID(mfsPath)
         if err != nil {
-            fmt.Printf("Error listing CIDs: %v\n", err)
+            fmt.Printf("Error listing path: %v\n", err)
             os.Exit(1)
         }
         if len(cids) == 0 {
