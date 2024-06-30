@@ -12,7 +12,7 @@ import (
 
 // UploadFile uploads a file to IPFS and adds it to MFS
 func UploadFile(filePath string, mfsPath string) error {
-	
+
 	// Convert file paths to a format compatible with the OS
 	filePath = filepath.ToSlash(filePath)
 
@@ -43,9 +43,14 @@ func UploadFile(filePath string, mfsPath string) error {
 
 	// Append the file name to the MFS path if it is a directory
 	destPath := mfsPath
-	
 	if isDir(ctx, sh, mfsPath) {
 		destPath = filepath.ToSlash(filepath.Join(mfsPath, filepath.Base(filePath)))
+	}
+
+	// Check if file already exists and generate a new name if necessary
+	destPath, err = getUniqueMFSPath(ctx, sh, destPath)
+	if err != nil {
+		return fmt.Errorf("could not get unique MFS path: %v", err)
 	}
 
 	// Add the file to MFS
@@ -84,4 +89,23 @@ func isDir(ctx context.Context, sh *shell.Shell, mfsPath string) bool {
 		return false
 	}
 	return stat.Type == "directory"
+}
+
+// getUniqueMFSPath checks if the file exists in the MFS path and generates a unique path
+func getUniqueMFSPath(ctx context.Context, sh *shell.Shell, destPath string) (string, error) {
+	dir := filepath.Dir(destPath)
+	base := filepath.Base(destPath)
+	ext := filepath.Ext(base)
+	name := strings.TrimSuffix(base, ext)
+
+	for i := 1; ; i++ {
+		newName := fmt.Sprintf("%s_version%d%s", name, i, ext)
+		newPath := filepath.ToSlash(filepath.Join(dir, newName))
+		if _, err := sh.FilesStat(ctx, newPath); err != nil {
+			if strings.Contains(err.Error(), "file does not exist") {
+				return newPath, nil
+			}
+			return "", err
+		}
+	}
 }
