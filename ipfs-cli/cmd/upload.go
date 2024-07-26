@@ -35,7 +35,7 @@ func UploadFile(filePath string) error {
 	defer file.Close()
 
 	// Use IPFS command line to add the file with CIDv1
-	cmd := exec.Command("ipfs", "add", "--cid-version=1",  "--hash=sha2-512", "--chunker=size-262144","-Q", filePath)
+	cmd := exec.Command("ipfs", "add", "--cid-version=1",  "--hash=sha2-256", "--chunker=size-262144","-Q", filePath)
 	output, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("could not add file to IPFS with CIDv1: %v", err)
