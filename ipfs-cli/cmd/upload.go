@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -12,6 +13,7 @@ import (
 
 // UploadFile uploads a file to IPFS and adds it to MFS using a derived MFS path
 func UploadFile(filePath string) error {
+	
 	// Convert file paths to a format compatible with the OS
 	filePath = filepath.ToSlash(filePath)
 
@@ -32,11 +34,14 @@ func UploadFile(filePath string) error {
 	}
 	defer file.Close()
 
-	// Add the file to IPFS
-	cid, err := sh.Add(file)
+	// Use IPFS command line to add the file with CIDv1
+	cmd := exec.Command("ipfs", "add", "--cid-version=1",  "--hash=sha2-512", "--chunker=size-262144","-Q", filePath)
+	output, err := cmd.Output()
 	if err != nil {
-		return fmt.Errorf("could not add file to IPFS: %v", err)
+		return fmt.Errorf("could not add file to IPFS with CIDv1: %v", err)
 	}
+
+	cid := strings.TrimSpace(string(output))
 
 	// Create a context
 	ctx := context.Background()
