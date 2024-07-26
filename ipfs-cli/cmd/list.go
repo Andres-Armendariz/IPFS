@@ -17,11 +17,6 @@ func ListCID(mfsPath string) ([]string, error) {
 	// Connect to the local IPFS node
 	sh := shell.NewShell("localhost:5001")
 
-	// Verify the connection
-	if !sh.IsUp() {
-		return nil, fmt.Errorf("IPFS node is not running")
-	}
-
 	// Create a context
 	ctx := context.Background()
 
