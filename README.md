@@ -13,7 +13,8 @@ Una vez otorgados los permisos, ejecute el archivo en su terminal:
 Probablemente se le solicitarán sus credenciales para completar el proceso. Cuando la ejecución termine, verá una salida similar a la siguiente:
 Compruebe la instalación con:
 
-![Uploading image.png…]()
+![image](https://github.com/user-attachments/assets/e8719b15-b414-4334-a595-8cd32b70ee79)
+
 
 Levante el nodo IPFS con:
 ```
@@ -25,7 +26,8 @@ ipfs daemon
 ```
 Después de unos minutos, obtendrá una salida similar a:
 
-![Uploading image.png…]()
+![image](https://github.com/user-attachments/assets/c62d2858-4137-43f6-8034-5a9e84362582)
+
 
 Puede ingresar a la dirección indicada en la terminal para comprobar que la interfaz gráfica está operativa.
 
